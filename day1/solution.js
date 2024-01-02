@@ -3,7 +3,7 @@ const path = require("path");
 const { performance } = require('perf_hooks');
 
 
-function load(file){
+function load(file) {
 	return input = fs
 		.readFileSync(path.join(__dirname, file), 'utf8')
 		.toString()
@@ -11,7 +11,7 @@ function load(file){
 }
 
 
-function solve(p){
+function solve(p) {
 	elves = p
 		.map(
 			elf => elf.split("\r\n")
@@ -23,7 +23,7 @@ function solve(p){
 }
 
 
-function main(){
+function main() {
 	const startTime = performance.now()
 	const solution = solve(load("./input.txt"))
 
