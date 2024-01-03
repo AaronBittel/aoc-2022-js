@@ -11,7 +11,6 @@ function load(file) {
 }
 
 
-
 function solve(p) {
     const part1 = p.reduce((sum, line) => {
         const halfLength = line.length / 2;

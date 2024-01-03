@@ -1,21 +1,19 @@
-const fs = require('fs');
+const fs = require("fs");
 const path = require("path");
-const { performance } = require('perf_hooks');
+const perf_hooks = require("perf_hooks");
 
 
 function load(file) {
-	return input = fs
-		.readFileSync(path.join(__dirname, file), 'utf8')
-		.toString()
-		.split("\r\n\r\n")
-        .map(line => line.split("\r\n"))
+    return input = fs.readFileSync(path.join(__dirname, file), 'utf8')
+	.toString()
+	.split("\r\n\r\n")
+    .map(line => line.split("\r\n"))
 }
-
 
 
 function solve(p, part1) {
     const [plan, moves] = [p[0], p[1]];
-    const crates = [...Array((plan[0].length + 1) / 4)].map(e => Array(0))
+    const crates = [...Array((plan[0].length + 1) / 4)].map(_ => Array(0))
     for (line of plan.slice(0, plan.length - 1)) {
         for (let i = 1; i < line.length; i += 4) {
             // check if letter
@@ -42,14 +40,14 @@ function solve(p, part1) {
 
 
 function main() {
-	const startTime = performance.now()
+	const startTime = perf_hooks.performance.now()
     puzzle = load("./input.txt")
 	const solPart1 = solve(puzzle, true)
     const solPart2 = solve(puzzle, false)
 
 	console.log("Solution Part 1:", solPart1)
     console.log("Solution Part 2:", solPart2)
-	console.log("Solved in " + ((performance.now() - startTime) / 1000).toFixed(5) + " Sec.")
+	console.log("Solved in " + ((perf_hooks.performance.now() - startTime) / 1000).toFixed(5) + " Sec.")
 }
 
 
