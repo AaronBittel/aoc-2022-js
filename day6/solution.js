@@ -33,7 +33,7 @@ function solve(p) {
 
 function main() {
 	const startTime = performance.now()
-	const solPart1 = solve(load("./input.txt"))
+	const solPart1 = solve(load("./input_.txt"))
 
 	console.log("Solution Part 1:", solPart1)
 	console.log("Solved in " + ((performance.now() - startTime) / 1000).toFixed(5) + " Sec.")
