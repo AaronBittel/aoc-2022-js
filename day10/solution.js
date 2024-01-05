@@ -9,7 +9,7 @@ function load(file) {
         .split("\r\n"));
 }
 
-function solve(p) {
+function solvePart1(p) {
     let registerValue = 1;
     let cycle = 0;
     const specialCycles = new Map([
@@ -41,7 +41,6 @@ function solve(p) {
             break;
         }
     }
-    console.log(specialCycles);
     let total = 0;
     specialCycles.forEach((value, key) => {
         total += value * key;
@@ -49,12 +48,60 @@ function solve(p) {
     return total;
 }
 
+function solvePart2(p) {
+    points = new Set();
+    let registerValue = 1;
+    let crtValue = 0;
+    let rowIndex = 0;
+    for (const cmd of p) {
+        if (cmd.startsWith("addx")) {
+            count = Number(cmd.split(" ")[1]);
+            for (let i = 0; i < 2; ++i) {
+                if (Math.abs(crtValue - registerValue) <= 1) {
+                    points.add(crtValue + rowIndex * 40);
+                }
+                crtValue++;
+                if (crtValue === 40) {
+                    crtValue = 0;
+                    rowIndex++;
+                }
+            }
+            registerValue += count;
+        } else {
+            if (Math.abs(crtValue - registerValue) <= 1) {
+                points.add(crtValue + rowIndex * 40);
+            }
+            crtValue++;
+            if (crtValue === 40) {
+                crtValue = 0;
+                rowIndex++;
+            }
+        }
+    }
+
+    let part2 = "\n";
+    for (let y = 0; y < 6; ++y) {
+        for (let x = 0; x < 40; ++x) {
+            const check = y * 40 + x;
+            if (points.has(check)) {
+                part2 += "#";
+            } else {
+                part2 += ".";
+            }
+        }
+        part2 += "\n";
+    }
+    return part2;
+}
+
 function main() {
     const startTime = performance.now();
     const puzzle = load("./input.txt");
-    const solPart1 = solve(puzzle);
+    const solPart1 = solvePart1(puzzle);
+    const solPart2 = solvePart2(puzzle);
 
     console.log("Solution Part 1:", solPart1);
+    console.log("Solution Part 2:", solPart2);
 
     const executionTime = ((performance.now() - startTime) / 1000).toFixed(5);
     console.log(`Solved in ${executionTime} Sec.`);
