@@ -1,4 +1,3 @@
-const { dir } = require("console");
 const fs = require("fs");
 const path = require("path");
 const { performance } = require("perf_hooks");
@@ -56,7 +55,6 @@ function solve(p, part1) {
         for (const [_, value] of Object.entries(sizes)) {
             if (value > to_remove_space && value < s) {
                 s = value;
-                z;
             }
         }
         return s;
