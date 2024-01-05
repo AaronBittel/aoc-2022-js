@@ -24,7 +24,7 @@ function load(file) {
         .split("\r\n"));
 }
 
-function is_visible(grid, width, height, pos, dir) {
+function isVisible(grid, width, height, pos, dir) {
     let nextPos = pos.add(dir);
     while (
         nextPos.x >= 0 &&
@@ -40,7 +40,25 @@ function is_visible(grid, width, height, pos, dir) {
     return true;
 }
 
-function solve(p) {
+function getScenicScore(grid, width, height, pos, dir) {
+    let nextPos = pos.add(dir);
+    total = 0;
+    while (
+        nextPos.x >= 0 &&
+        nextPos.x < width &&
+        nextPos.y >= 0 &&
+        nextPos.y < height
+    ) {
+        total += 1;
+        if (grid[nextPos] >= grid[pos]) {
+            break;
+        }
+        nextPos = nextPos.add(dir);
+    }
+    return total;
+}
+
+function solve(p, part1) {
     const width = p[0].length;
     const height = p.length;
 
@@ -58,22 +76,42 @@ function solve(p) {
         }
     }
 
-    let total = 2 * p[0].length + 2 * (p.length - 2);
+    if (part1) {
+        var total = 2 * p[0].length + 2 * (p.length - 2);
+    } else {
+        var total = 0;
+    }
 
     for (let y = 1; y < p.length - 1; ++y) {
         for (let x = 1; x < p[0].length - 1; ++x) {
-            dir_visible = {};
+            var dir_visible = {};
             for (dir of directions) {
-                dir_visible[dir] = is_visible(
-                    grid,
-                    width,
-                    height,
-                    new Point(x, y),
-                    dir
-                );
+                if (part1) {
+                    dir_visible[dir] = isVisible(
+                        grid,
+                        width,
+                        height,
+                        new Point(x, y),
+                        dir
+                    );
+                } else {
+                    dir_visible[dir] = getScenicScore(
+                        grid,
+                        width,
+                        height,
+                        new Point(x, y),
+                        dir
+                    );
+                }
             }
-            if (Object.values(dir_visible).some((value) => value)) {
+            if (part1 && Object.values(dir_visible).some((value) => value)) {
                 total += 1;
+            } else if (!part1) {
+                scenicScore = Object.values(dir_visible).reduce(
+                    (sum, val) => sum * val,
+                    1
+                );
+                scenicScore > total ? (total = scenicScore) : (total = total);
             }
         }
     }
@@ -84,9 +122,11 @@ function solve(p) {
 function main() {
     const startTime = performance.now();
     const puzzle = load("./input.txt");
-    const solPart1 = solve(puzzle);
+    const solPart1 = solve(puzzle, true);
+    const solPart2 = solve(puzzle, false);
 
     console.log("Solution Part 1:", solPart1);
+    console.log("Solution Part 2:", solPart2);
     console.log(
         "Solved in " +
             ((performance.now() - startTime) / 1000).toFixed(5) +
