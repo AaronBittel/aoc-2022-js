@@ -1,129 +1,79 @@
-
-const { dir } = require('console');
-const fs = require('fs');
+const { dir } = require("console");
+const fs = require("fs");
 const path = require("path");
-const { performance } = require('perf_hooks');
-
-
-class Node {
-	constructor(prev, next, name, value) {
-		this.prev = prev;
-		this.next = next;
-		this.name = name;
-		this.value = value;
-	}
-}
-
+const { performance } = require("perf_hooks");
 
 function load(file) {
-	return input = fs
-		.readFileSync(path.join(__dirname, file), 'utf8')
-		.toString()
-		.split("\r\n")
+    return (input = fs
+        .readFileSync(path.join(__dirname, file), "utf8")
+        .toString()
+        .split("\r\n"));
 }
 
+function solve(p, part1) {
+    const sizes = {};
+    const stack = [];
 
-function parse(p) {
-	let head = new Node(null, new Map(null), "/", null)
-	let currentNode = head
-	for (let i = 1; i < p.length; ++i) {
-		const cmd = p[i].split(" ")
-		if (cmd.length === 3) {
-			// cd command
-			if (cmd[2] === "..") {
-				currentNode = currentNode.prev
-			} else {
-				currentNode = currentNode.next.get(cmd[2])
-			}
-		} else if (cmd[0] === "$") {
-			// ls command
-		} else {
-			if (cmd[0] === "dir") {
-				// dir
-				newDir = new Node(currentNode, new Map(null), cmd[1], null)
-				currentNode.next.set(newDir.name, newDir)
-			} else {
-				// file
-				newFile = new Node(currentNode, null, cmd[1], Number(cmd[0]))
-				currentNode.next.set(newFile.name, newFile)
-			}
-		}
-	}
-	return head
+    p.forEach((c) => {
+        if (c.startsWith("$ ls") || c.startsWith("dir")) {
+            return;
+        }
+
+        if (c.startsWith("$ cd")) {
+            const dest = c.split(" ")[2];
+            if (dest === "..") {
+                stack.pop();
+            } else {
+                const path =
+                    stack.length > 0
+                        ? `${stack[stack.length - 1]}_${dest}`
+                        : dest;
+                stack.push(path);
+            }
+        } else {
+            const [size, _] = c.split(" ");
+            stack.forEach((path) => {
+                sizes[path] = (sizes[path] || 0) + Number(size);
+            });
+        }
+    });
+
+    if (part1) {
+        let total = 0;
+        for (const [_, size] of Object.entries(sizes)) {
+            total += size <= 100000 ? size : 0;
+        }
+
+        return total;
+    } else {
+        const total_disc_space = 70000000;
+        const needed_unused_space = 30000000;
+        const available_space = total_disc_space - needed_unused_space;
+        const directory_space = sizes["/"];
+        const to_remove_space = directory_space - available_space;
+
+        let s = directory_space;
+        for (const [_, value] of Object.entries(sizes)) {
+            if (value > to_remove_space && value < s) {
+                s = value;
+                z;
+            }
+        }
+        return s;
+    }
 }
-
-
-function calc_dirSizes(head) {
-	dirSizes = new Map([["/", 0]])
-	queue = new Array(head)
-	while (queue.length > 0) {
-		currDir = queue.pop()
-		for ([nodeName, node] of currDir.next) {
-			tmpDir = currDir
-			if (node.next === null) {
-				fileSize = dirSizes.get(tmpDir.name)
-				do {
-					dirSizes.set(tmpDir.name, dirSizes.get(tmpDir.name) + node.value)
-					tmpDir = tmpDir.prev
-				} while (tmpDir !== null)
-			} else {
-				queue.push(node)
-				if (dirSizes.get(nodeName) === undefined) {
-					dirSizes.set(nodeName, 0)
-				}
-			}
-		}
-	}
-	return dirSizes
-}
-
-
-function print_dir_tree(head) {
-	let queue = [[head, 0]]
-	while (queue.length > 0) {
-		[node, indent] = queue.pop()
-		if (node.value === null) {
-			console.log("\t".repeat(indent), node.name)
-		} else {
-			console.log("\t".repeat(indent), node.name, node.value)
-		}
-		if (node.next === null) {
-			continue
-		}
-		for ([_, node] of node.next) {
-			queue.push([node, indent + 1])
-		}
-	}
-}
-
-
-function solve(p) {
-	const head = parse(p)
-
-	// print_dir_tree(head)
-
-	const dirsSizes =  calc_dirSizes(head)
-
-	let total = 0
-	for ([key, value] of dirsSizes.entries()) {
-		if (value > 100000) {
-			continue
-		}
-		total += value
-	}
-	return total
-}
-
-
 
 function main() {
-	const startTime = performance.now()
-    const puzzle = load("./input.txt")
-	const solPart1 = solve(puzzle)
+    const startTime = performance.now();
+    const puzzle = load("./input.txt");
+    const solPart1 = solve(puzzle, true);
+    const solPart2 = solve(puzzle, false);
 
-	console.log(`Solution Part 1: ${solPart1}`)
-	console.log(`Solved in ${((performance.now() - startTime) / 1000).toFixed(5)} Sec.`)
+    console.log(`Solution Part 1: ${solPart1}`);
+    console.log(`Solution Part 2: ${solPart2}`);
+    console.log(
+        `Solved in ${((performance.now() - startTime) / 1000).toFixed(5)} Sec.`
+    );
 }
 
-
-main()
+main();
