@@ -1,0 +1,18 @@
+$ cd /
+dir a
+dir b
+99999 asf
+$ cd a
+$ ls
+dir c
+10 asfldkj
+$ cd c
+$ ls
+dir d
+$ cd d
+$ ls
+20 afasöfk
+dir e
+$ cd e
+$ ls
+100 aöslkfd

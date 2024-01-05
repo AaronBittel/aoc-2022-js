@@ -31,7 +31,7 @@ function solve(p, count) {
     if (p.length > 1) {
         return solution = p.map(row => find_first_unique_values(row, count))
     } else {
-        return solution = find_first_unique_values(p[0], count);
+        return solution = find_first_unique_values(p[1], count);
     }
 }
 
