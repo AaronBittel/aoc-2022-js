@@ -30,10 +30,14 @@ class Monkey {
         return eval(`${item} % ${this.test} === 0`);
     }
 
-    action() {
+    action(part1, modulo) {
         for (let item of this.itemList) {
             this.activity++;
-            item = Math.floor(this.operate(item) / 3);
+            if (part1) {
+                item = Math.floor(this.operate(item) / 3);
+            } else {
+                item = this.operate(Math.floor(item % modulo));
+            }
             if (this.testing(item)) {
                 this.monkeyTestTrue.itemList.push(item);
             } else {
@@ -44,7 +48,7 @@ class Monkey {
     }
 }
 
-function solve(p) {
+function solve(p, part1) {
     monkeyList = new Array();
     for (mon of p) {
         startingItems = mon[1].split(": ")[1].split(", ").map(Number);
@@ -62,27 +66,31 @@ function solve(p) {
         index++;
     }
 
-    for (let i = 0; i < 20; ++i) {
+    times = part1 ? 20 : 10000;
+    modulo = monkeyList
+        .map((monkey) => monkey.test)
+        .reduce((mul, val) => val * mul, 1);
+    for (let i = 0; i < times; ++i) {
         for (const monkey of monkeyList) {
-            monkey.action();
+            monkey.action(part1, modulo);
         }
     }
 
     return monkeyList
-        .map((monkey) => {
-            return monkey.activity;
-        })
+        .map((monkey) => monkey.activity)
         .sort((a, b) => b - a)
         .slice(0, 2)
-        .reduce((sum, val) => val * sum, 1);
+        .reduce((mul, val) => val * mul, 1);
 }
 
 function main() {
     const startTime = performance.now();
     const puzzle = load("./input.txt");
-    const solution = solve(puzzle);
+    const solPart1 = solve(puzzle, true);
+    const solPart2 = solve(puzzle, false);
 
-    console.log("Solution Part 1:", solution);
+    console.log("Solution Part 1:", solPart1);
+    console.log("Solution Part 2:", solPart2);
 
     const executionTime = ((performance.now() - startTime) / 1000).toFixed(5);
     console.log(`Solved in ${executionTime} Sec.`);
